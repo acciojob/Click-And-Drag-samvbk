@@ -1,12 +1,21 @@
 // Your code here.
 const container = document.querySelector(".items");
 const items = document.querySelectorAll(".item");
-
+const columns = 5;
+const gap = 20;
+const itemWidth = 200;
 let selectedItem = null;
 let offsetX = 0;
 let offsetY = 0;
 
 items.forEach((item) => {
+	item.style.position = "absolute";
+	const row = Math.floor(index / columns);
+	const col = index % columns;
+	
+	item.style.left = col * (itemWidth + gap) + "px";
+	item.style.top = row * (item.offsetHeight + gap) + "px";
+	
 	item.addEventListener('mousedown',(event) =>{
 		selectedItem = item;
 

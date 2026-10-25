@@ -28,20 +28,25 @@ items.forEach((item, index) => {
 	});
 });
 
-document.addEventListener("mousemove",(event) =>{
-	if (selectedItem === null){
-		return;
-	}
-	const parentRect = container.getBoundingClientRect();
+document.addEventListener("mousemove", (event) => {
+  if (selectedItem === null) return;
 
-	let x = event.clientX - parentRect.left -container.clientLeft - offsetX;
-	let y = event.clientY - parentRect.top -container.clientTop - offsetY;
+  const parentRect = container.getBoundingClientRect();
 
-	x = Math.max(0, Math.min(x, container.clientWidth - selectedItem.offsetWidth));
-	y = Math.max(0, Math.min(y, container.clientHeight - selectedItem.offsetHeight));
+  let x = event.clientX - parentRect.left
+        - container.clientLeft - offsetX;
 
-	selectedItem.style.left = x + "px";
-	selectedItem.style.top = y + "px";
+  let y = event.clientY - parentRect.top
+        - container.clientTop - offsetY;
+
+  const maxX = container.clientWidth - selectedItem.offsetWidth;
+  const maxY = container.clientHeight - selectedItem.offsetHeight;
+
+  x = Math.max(0, Math.min(x, maxX));
+  y = Math.max(0, Math.min(y, maxY));
+
+  selectedItem.style.left = `${x}px`;
+  selectedItem.style.top = `${y}px`;
 });
 
 document.addEventListener("mouseup", (event) => {

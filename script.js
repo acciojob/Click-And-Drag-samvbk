@@ -59,6 +59,16 @@ document.addEventListener('mousemove', (e) => {
   activeCube.style.top = y + 'px';
 });
 
+// Keep every cube inside the container if the container shrinks (window resize)
+window.addEventListener('resize', () => {
+  cubes.forEach((cube) => {
+    const maxX = container.clientWidth - cube.offsetWidth;
+    const maxY = container.clientHeight - cube.offsetHeight;
+    cube.style.left = Math.min(Math.max(0, cube.offsetLeft), maxX) + 'px';
+    cube.style.top = Math.min(Math.max(0, cube.offsetTop), maxY) + 'px';
+  });
+});
+
 document.addEventListener('mouseup', () => {
   if (!activeCube) return;
 

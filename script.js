@@ -8,7 +8,7 @@ let selectedItem = null;
 let offsetX = 0;
 let offsetY = 0;
 
-items.forEach((item) => {
+items.forEach((item, index) => {
 	item.style.position = "absolute";
 	const row = Math.floor(index / columns);
 	const col = index % columns;

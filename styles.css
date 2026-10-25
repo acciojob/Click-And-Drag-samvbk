@@ -19,6 +19,9 @@ body {
 }
 
 .items {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
   height: 800px;
   padding: 100px;
   width: 100%;
@@ -55,6 +58,7 @@ body {
   color: rgba(0,0,0,0.15);
   box-shadow: inset 0 0 0 10px rgba(0,0,0,0.15);
 	position:absolute;
+	height: calc(100% - 40px);
 }
 
 .item:nth-child(9n+1) { background: dodgerblue;}

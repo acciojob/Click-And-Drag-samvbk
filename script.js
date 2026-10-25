@@ -1,84 +1,69 @@
+const container = document.querySelector('.container');
+const cubes = document.querySelectorAll('.cube');
 
-const container = document.querySelector(".items");
-const items = document.querySelectorAll(".item");
+const GAP = 20;
 
-const columns = 5;
-const gap = 20;
+// ---------- 1. Arrange cubes in a grid (works for any number of cubes) ----------
+function arrangeGrid() {
+  if (!cubes.length) return;
 
-let selectedItem = null;
+  const size = cubes[0].offsetWidth;
+  const cols = Math.max(1, Math.floor((container.clientWidth - GAP) / (size + GAP)));
+
+  cubes.forEach((cube, i) => {
+    const row = Math.floor(i / cols);
+    const col = i % cols;
+    cube.style.left = GAP + col * (size + GAP) + 'px';
+    cube.style.top = GAP + row * (size + GAP) + 'px';
+  });
+}
+
+arrangeGrid();
+
+// ---------- 2. Drag behaviour ----------
+let activeCube = null;
 let offsetX = 0;
 let offsetY = 0;
+let zCounter = 1;
 
-// Set up the initial grid
-items.forEach((item, index) => {
-  const row = Math.floor(index / columns);
-  const col = index % columns;
+cubes.forEach((cube) => {
+  cube.addEventListener('mousedown', (e) => {
+    e.preventDefault();
+    activeCube = cube;
 
-  item.style.position = "absolute";
-  item.style.left = `${col * (item.offsetWidth + gap)}px`;
-  item.style.top = `${row * (item.offsetHeight + gap)}px`;
+    // Distance between mouse and cube's top-left corner, so it doesn't jump
+    const cubeRect = cube.getBoundingClientRect();
+    offsetX = e.clientX - cubeRect.left;
+    offsetY = e.clientY - cubeRect.top;
 
-  item.addEventListener("mousedown", (event) => {
-    if (event.button !== 0) return;
-
-    event.preventDefault();
-
-    selectedItem = item;
-
-    const itemRect = item.getBoundingClientRect();
-    const parentRect = container.getBoundingClientRect();
-
-    // Store the click offset in CSS layout coordinates
-    const scaleX = parentRect.width / container.offsetWidth;
-    const scaleY = parentRect.height / container.offsetHeight;
-
-    offsetX = (event.clientX - itemRect.left) / scaleX;
-    offsetY = (event.clientY - itemRect.top) / scaleY;
-
-    item.style.zIndex = 1000;
-    container.classList.add("active");
+    cube.classList.add('dragging');
   });
 });
 
-document.addEventListener("mousemove", (event) => {
-  if (!selectedItem) return;
+document.addEventListener('mousemove', (e) => {
+  if (!activeCube) return;
 
-  const rect = container.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
 
-  const scaleX = rect.width / container.offsetWidth;
-  const scaleY = rect.height / container.offsetHeight;
+  // Mouse position relative to the container's inner area (inside the border)
+  let x = e.clientX - containerRect.left - container.clientLeft - offsetX;
+  let y = e.clientY - containerRect.top - container.clientTop - offsetY;
 
-  // Convert mouse coordinates to the container's layout coordinates
-  let x =
-    (event.clientX - rect.left) / scaleX -
-    container.clientLeft -
-    offsetX;
+  // Boundary conditions: keep the cube fully inside the container
+  const maxX = container.clientWidth - activeCube.offsetWidth;
+  const maxY = container.clientHeight - activeCube.offsetHeight;
+  x = Math.min(Math.max(0, x), maxX);
+  y = Math.min(Math.max(0, y), maxY);
 
-  let y =
-    (event.clientY - rect.top) / scaleY -
-    container.clientTop -
-    offsetY;
-
-  // Available inner space
-  const maxX = container.clientWidth - selectedItem.offsetWidth;
-  const maxY = container.clientHeight - selectedItem.offsetHeight;
-
-  // Clamp before applying styles
-  x = Math.max(0, Math.min(x, maxX));
-  y = Math.max(0, Math.min(y, maxY));
-
-  selectedItem.style.left = `${x}px`;
-  selectedItem.style.top = `${y}px`;
+  activeCube.style.left = x + 'px';
+  activeCube.style.top = y + 'px';
 });
 
-function stopDragging() {
-  if (selectedItem) {
-    selectedItem.style.zIndex = 0;
-  }
+document.addEventListener('mouseup', () => {
+  if (!activeCube) return;
 
-  selectedItem = null;
-  container.classList.remove("active");
-}
-
-document.addEventListener("mouseup", stopDragging);
-window.addEventListener("blur", stopDragging);
+  activeCube.classList.remove('dragging');
+  // Keep the last dragged cube on top of the others
+  activeCube.style.zIndex = ++zCounter;
+  activeCube = null; // cube stays where it was dropped
+});

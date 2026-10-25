@@ -14,17 +14,19 @@ items.forEach((item) => {
 
 		offsetX=event.clientX - rect.left;
 		offsetY=event.clientY - rect.top;
+
+		container.classList.add("active");
 	});
 });
 
-document.addEventListener("mousemove",() =>{
-	if (selectedItem = null){
+document.addEventListener("mousemove",(event) =>{
+	if (selectedItem === null){
 		return;
 	}
-	const parentRect = container.getBountClientRect();
+	const parentRect = container.getBoundingClientRect();
 
-	let x = event.clientX - parentRect.left - offsetX;
-	let y = event.clientY - parentRect.top - offsetY;
+	let x = event.clientX - parentRect.left -container.clientLeft - offsetX;
+	let y = event.clientY - parentRect.top -container.clientTop - offsetY;
 
 	x = Math.max(0, Math.min(x, container.clientWidth - selectedItem.offsetWidth));
 	y = Math.max(0, Math.min(y, container.clientHeight - selectedItem.offsetHeight));
@@ -33,8 +35,9 @@ document.addEventListener("mousemove",() =>{
 	selectedItem.style.top = y + "px";
 });
 
-document.addEventListener("mouseup", () => {
+document.addEventListener("mouseup", (event) => {
 	selectedItem = null;
+	container.classList.remove("active");
 });
 
 

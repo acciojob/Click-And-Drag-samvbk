@@ -37,40 +37,22 @@ items.forEach((item, index) => {
 
 // 3. Move the selected cube
 document.addEventListener("mousemove", (event) => {
-  if (selectedItem === null) return;
+  if (!selectedItem) return;
 
-  const parentRect = container.getBoundingClientRect();
+  const rect = container.getBoundingClientRect();
 
-  let x =
-    event.clientX -
-    parentRect.left -
-    container.clientLeft -
-    offsetX;
+  let x = event.clientX - rect.left - container.clientLeft - offsetX;
+  let y = event.clientY - rect.top - container.clientTop - offsetY;
 
-  let y =
-    event.clientY -
-    parentRect.top -
-    container.clientTop -
-    offsetY;
+  const maxX = container.clientWidth - selectedItem.offsetWidth;
+  const maxY = container.clientHeight - selectedItem.offsetHeight;
 
-  // 4. Keep the cube inside the container
-  const maxX = Math.max(
-    0,
-    container.clientWidth - selectedItem.offsetWidth
-  );
-
-  const maxY = Math.max(
-    0,
-    container.clientHeight - selectedItem.offsetHeight
-  );
-
-  x = Math.max(0, Math.min(x, maxX));
-  y = Math.max(0, Math.min(y, maxY));
+  x = Math.min(Math.max(0, x), Math.max(0, maxX));
+  y = Math.min(Math.max(0, y), Math.max(0, maxY));
 
   selectedItem.style.left = `${x}px`;
   selectedItem.style.top = `${y}px`;
 });
-
 // 5. Drop the cube
 document.addEventListener("mouseup", () => {
   if (selectedItem !== null) {
